@@ -1,0 +1,6 @@
+name = "hashes-mojo"
+version = "0.1.0"
+description = "Pure-Mojo CRC-32, MurmurHash3 x86-32, and XXH64 for table-format tooling"
+tags = ["hashing", "crc32", "murmurhash", "xxhash", "iceberg", "parquet"]
+# other tins this one depends on; omit if none
+tins = []

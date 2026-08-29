@@ -1,0 +1,45 @@
+[workspace]
+authors = ["Marius S <39998+winding-lines@users.noreply.github.com>"]
+channels = ["https://conda.modular.com/max-nightly", "conda-forge"]
+name = "hashes.mojo"
+version = "0.1.0"
+description = "Pure-Mojo CRC-32, MurmurHash3 x86-32, and XXH64 — the hashes Apache Iceberg and Parquet need."
+preview = ["pixi-build"]
+platforms = ["osx-arm64", "linux-64"]
+
+[tasks]
+# Pure Mojo, no FFI — consumers just `-I ../hashes.mojo/src`.
+test = "mojo run -I src tests/test_hashes.mojo"
+bench = "mojo run -I src bench/bench_hashes.mojo"
+
+# ── pixi-build: consumable as a pixi source dependency ──────────────────────
+# Conda package name is hashes-mojo; the Mojo import stays `from hashes import …`.
+[package]
+name = "hashes-mojo"
+version = "0.1.0"
+
+[package.build]
+backend = { name = "pixi-build-mojo", version = "0.*" }
+
+[package.build.config.pkg]
+path = "src/hashes"
+name = "hashes"
+
+[package.host-dependencies]
+mojo-compiler = "==1.0.0"
+
+[package.build-dependencies]
+mojo-compiler = "==1.0.0"
+
+[package.run-dependencies]
+mojo-compiler = ">=1.0.0,<2"
+
+[feature.nightly.dependencies]
+modular = ">=26.6.0.dev2026082605,<27"
+
+[feature.stable.dependencies]
+mojo-compiler = "==1.0.0"
+
+[environments]
+default = ["nightly"]
+stable = ["stable"]
