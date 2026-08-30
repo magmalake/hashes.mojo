@@ -1,5 +1,7 @@
 # hashes.mojo
 
+[![mojoshelf](https://mojoshelf.org/badge/hashes-mojo.svg)](https://mojoshelf.org/tins/hashes-mojo) [![mojo nightly](https://mojoshelf.org/badge/hashes-mojo/nightly.svg)](https://mojoshelf.org/tins/hashes-mojo)
+
 [![CI](https://github.com/magmalake/hashes.mojo/actions/workflows/ci.yml/badge.svg)](https://github.com/magmalake/hashes.mojo/actions/workflows/ci.yml)
 
 Part of **magmalake** — data lake building blocks in Mojo.
