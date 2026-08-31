@@ -4,7 +4,7 @@
 
 [![CI](https://github.com/magmalake/hashes.mojo/actions/workflows/ci.yml/badge.svg)](https://github.com/magmalake/hashes.mojo/actions/workflows/ci.yml)
 
-Part of **magmalake** — data lake building blocks in Mojo.
+Part of [**magmalake**](https://magmalake.org) — data lake building blocks in Mojo.
 
 A pure-[Mojo](https://www.modular.com/mojo) library of the three hashes that
 **Apache Iceberg** and **Apache Parquet** actually need, with no
