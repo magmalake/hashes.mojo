@@ -97,18 +97,58 @@ vectors (all `Int32`, two's complement of the `UInt32` hash):
 
 ## Performance
 
-`pixi run bench` hashes a 64 MiB buffer with each function. Measured on an
-Apple Silicon Mac (`osx-arm64`, stable Mojo 1.0.0):
+`pixi run -e bench bench` hashes a 64 MiB buffer with each function through
+[bench.mojo](https://github.com/magmalake/bench.mojo), which warms up,
+calibrates its own iteration count, and reports the mean of five timed
+repetitions. The GB/s column is the harness's figure, not arithmetic done in
+the benchmark. Measured on an Apple Silicon Mac (`osx-arm64`, stable Mojo
+1.0.0), across consecutive runs:
 
-| hash | throughput |
-|---|---|
-| CRC-32 (slice-by-8) | ~1.3 GB/s |
-| MurmurHash3 x86-32 | ~1.5 GB/s |
-| XXH64 | ~1.2 GB/s |
+| hash | throughput | spread across runs |
+|---|---|---|
+| CRC-32 (slice-by-8) | 1.46 GB/s | 1.45–1.48 |
+| MurmurHash3 x86-32 | 1.65 GB/s | 1.64–1.67 |
+| XXH64 | 1.28 GB/s | 1.26–1.29 |
+
+CRC-32 and MurmurHash3 come out a little above the figures published before
+2026-09-01 (~1.3 / ~1.5 GB/s), which were a single cold pass over a
+freshly built buffer. XXH64 is unchanged at ~1.2–1.3. Same code, better
+measurement.
 
 Numbers are single-core, non-SIMD scalar implementations — correctness and
 portability (identical results on `osx-arm64` and `linux-64`, stable and
 nightly Mojo) took priority over squeezing out the last bit of throughput.
+
+### XXH64 is 28% faster when it has exactly one call site
+
+Worth knowing before you quote a number at it. If a module calls `xxh64`
+**once**, the compiler specialises it into that caller and a 64 MiB buffer
+takes 40 ms — 1.67 GB/s. Add a second `xxh64` call anywhere in the same module
+and the shared version is used instead: 51 ms, 1.29 GB/s. `crc32` and
+`murmur3_x86_32` show no such effect; that was measured, not assumed.
+
+The table above reports the **shared** figure, because it is what any consumer
+calling `xxh64` from more than one place actually gets, and because the
+alternative is a published number that moves 28% the day someone adds a call.
+`bench/bench_hashes.mojo` keeps a deliberate `_anchor_call_sites` helper to
+pin this down; see the comment there.
+
+Other output modes:
+
+```sh
+pixi run -e bench bench -- --json              # machine-readable, with every repetition
+pixi run -e bench bench -- --out results.json  # table plus a saved copy
+pixi run -e bench bench -- --only bench_xxh64
+pixi run -e bench bench -- --list
+```
+
+The `bench` environment is on stable Mojo 1.0.0, for a packaging reason rather
+than a language one. A precompiled Mojo package (`.mojoc`; `.mojopkg` is the
+deprecated spelling) is stamped with the compiler version that produced it and
+refused by any other, and magmalake tins build with `mojo-compiler 1.0.0`.
+The harness itself is toolchain-agnostic — [bench.mojo's own
+CI](https://github.com/magmalake/bench.mojo) runs it on stable and nightly
+from source. The library here still tests on both.
 
 ## Install as a mojoshelf tin
 
@@ -126,7 +166,7 @@ flags.
 ```sh
 pixi run -e stable test    # stable Mojo 1.0.0
 pixi run -e default test   # nightly
-pixi run bench              # throughput numbers above
+pixi run -e bench bench    # throughput numbers above
 ```
 
 ## License
