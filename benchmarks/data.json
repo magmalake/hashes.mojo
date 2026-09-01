@@ -1,0 +1,75 @@
+{
+  "hosts": {
+    "linux-x86_64-amd-epyc-9v74-80-core-processor-2c": {
+      "cpu": "AMD EPYC 9V74 80-Core Processor",
+      "os": "linux",
+      "arch": "x86_64",
+      "physical_cores": 2,
+      "logical_cores": 4,
+      "performance_cores": 2,
+      "memory_bytes": 16766410752,
+      "accelerator": false
+    }
+  },
+  "runs": [
+    {
+      "commit": "3a6df7a4a85dfce8ef744ee4567fe981ed9397d2",
+      "short_commit": "3a6df7a",
+      "timestamp": "2026-09-01T20:10:18Z",
+      "ref": "main",
+      "host": "linux-x86_64-amd-epyc-9v74-80-core-processor-2c",
+      "config": {
+        "min_runtime_secs": 1.0,
+        "num_warmup_iters": 2,
+        "num_repetitions": 5,
+        "max_iters": 100000000
+      },
+      "results": {
+        "bench_crc32": {
+          "mean_ns": 67884921.36470588,
+          "min_ns": 67717670.47058824,
+          "max_ns": 68381124.0,
+          "median_ns": 67719944.47058824,
+          "stddev_ns": 286783.43062531884,
+          "iters": 17,
+          "reps": 5,
+          "throughput": 0.9885680450223021,
+          "throughput_unit": "GB/s",
+          "throughput_metric": "bytes",
+          "throughput_count": 67108864
+        },
+        "bench_murmur3_x86_32": {
+          "mean_ns": 73881441.6,
+          "min_ns": 73564288.8,
+          "max_ns": 74448827.46666667,
+          "median_ns": 73796941.4,
+          "stddev_ns": 334075.3340462836,
+          "iters": 15,
+          "reps": 5,
+          "throughput": 0.9083318157668435,
+          "throughput_unit": "GB/s",
+          "throughput_metric": "bytes",
+          "throughput_count": 67108864
+        },
+        "bench_xxh64": {
+          "mean_ns": 78137106.37333333,
+          "min_ns": 78077342.26666667,
+          "max_ns": 78244736.33333333,
+          "median_ns": 78093088.86666666,
+          "stddev_ns": 71896.77346994054,
+          "iters": 15,
+          "reps": 5,
+          "throughput": 0.85886036884139,
+          "throughput_unit": "GB/s",
+          "throughput_metric": "bytes",
+          "throughput_count": 67108864
+        }
+      }
+    }
+  ],
+  "benchmarks": [
+    "bench_crc32",
+    "bench_murmur3_x86_32",
+    "bench_xxh64"
+  ]
+}
