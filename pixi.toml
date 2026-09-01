@@ -43,10 +43,10 @@ mojo-compiler = "==1.0.0"
 # environments that run tests. -I $CONDA_PREFIX/lib/mojo is what puts the
 # dependency's .mojopkg on the import path.
 #
-# Stable only, and for a packaging reason rather than a language one: every
-# magmalake tin builds its package with mojo-compiler 1.0.0, and nightly
-# cannot load a .mojopkg that stable produced. bench.mojo's own CI runs the
-# harness on both toolchains from source.
+# Stable only, and for a packaging reason rather than a language one: a
+# precompiled Mojo package is stamped with the compiler version that built it
+# and refused by any other, and magmalake tins build with mojo-compiler 1.0.0.
+# bench.mojo's own CI runs the harness on both toolchains from source.
 [feature.bench.dependencies]
 bench-mojo = { git = "https://github.com/magmalake/bench.mojo", rev = "1556d1471ccf8f512ec50afde48ab133a54e6e5b" }
 
