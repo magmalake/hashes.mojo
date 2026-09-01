@@ -97,18 +97,39 @@ vectors (all `Int32`, two's complement of the `UInt32` hash):
 
 ## Performance
 
-`pixi run bench` hashes a 64 MiB buffer with each function. Measured on an
-Apple Silicon Mac (`osx-arm64`, stable Mojo 1.0.0):
+`pixi run -e stable bench` hashes a 64 MiB buffer with each function through
+[`std.benchmark`](https://mojolang.org/docs/std/benchmark/), which warms up,
+picks its own batch size, and reports a mean over 25–33 iterations. The GB/s
+column is the harness's own `BenchMetric.bytes` figure, not arithmetic done in
+the benchmark. Measured on an Apple Silicon Mac (`osx-arm64`, stable Mojo
+1.0.0), five consecutive runs:
 
-| hash | throughput |
-|---|---|
-| CRC-32 (slice-by-8) | ~1.3 GB/s |
-| MurmurHash3 x86-32 | ~1.5 GB/s |
-| XXH64 | ~1.2 GB/s |
+| hash | throughput | spread across runs |
+|---|---|---|
+| CRC-32 (slice-by-8) | 1.48 GB/s | 1.47–1.51 |
+| MurmurHash3 x86-32 | 1.67 GB/s | 1.65–1.69 |
+| XXH64 | 1.29 GB/s | 1.28–1.30 |
+
+These are all a little higher than the figures published before
+2026-09-01 (~1.3 / ~1.5 / ~1.2 GB/s), which came from a hand-rolled harness
+that timed a single cold pass over a freshly built buffer. Same code, better
+measurement.
 
 Numbers are single-core, non-SIMD scalar implementations — correctness and
 portability (identical results on `osx-arm64` and `linux-64`, stable and
 nightly Mojo) took priority over squeezing out the last bit of throughput.
+
+Pass a path to also write CSV, for diffing across commits:
+
+```sh
+pixi run -e stable bench results.csv
+```
+
+The benchmark is stable-only. On nightly, `Bencher.iter` has lost its
+parameter form, and its value form will not take a `@parameter` closure while
+a plain closure cannot infer a capture convention — so nightly `std.benchmark`
+currently cannot express a benchmark that closes over data. The library itself
+still builds and tests clean on both.
 
 ## Install as a mojoshelf tin
 
@@ -126,7 +147,7 @@ flags.
 ```sh
 pixi run -e stable test    # stable Mojo 1.0.0
 pixi run -e default test   # nightly
-pixi run bench              # throughput numbers above
+pixi run -e stable bench   # throughput numbers above (stable only)
 ```
 
 ## License
