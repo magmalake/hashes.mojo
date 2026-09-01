@@ -39,12 +39,21 @@ modular = ">=26.6.0.dev2026082605,<27"
 [feature.stable.dependencies]
 mojo-compiler = "==1.0.0"
 
-# `bench` lives here, not in [tasks]: nightly's std.benchmark has no way to
-# express a benchmark that closes over data (see the Performance section of
-# the README), so `pixi run bench` would only ever fail on the default env.
-[feature.stable.tasks]
-bench = "mojo run -I src bench/bench_hashes.mojo"
+# Benchmarks get their own feature so the harness tin stays out of the
+# environments that run tests. -I $CONDA_PREFIX/lib/mojo is what puts the
+# dependency's .mojopkg on the import path.
+#
+# Stable only, and for a packaging reason rather than a language one: every
+# magmalake tin builds its package with mojo-compiler 1.0.0, and nightly
+# cannot load a .mojopkg that stable produced. bench.mojo's own CI runs the
+# harness on both toolchains from source.
+[feature.bench.dependencies]
+bench-mojo = { git = "https://github.com/magmalake/bench.mojo", rev = "1556d1471ccf8f512ec50afde48ab133a54e6e5b" }
+
+[feature.bench.tasks]
+bench = "mojo run -I src -I $CONDA_PREFIX/lib/mojo bench/bench_hashes.mojo"
 
 [environments]
 default = ["nightly"]
 stable = ["stable"]
+bench = ["stable", "bench"]

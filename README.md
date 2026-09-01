@@ -97,39 +97,57 @@ vectors (all `Int32`, two's complement of the `UInt32` hash):
 
 ## Performance
 
-`pixi run -e stable bench` hashes a 64 MiB buffer with each function through
-[`std.benchmark`](https://mojolang.org/docs/std/benchmark/), which warms up,
-picks its own batch size, and reports a mean over 25–33 iterations. The GB/s
-column is the harness's own `BenchMetric.bytes` figure, not arithmetic done in
+`pixi run -e bench bench` hashes a 64 MiB buffer with each function through
+[bench.mojo](https://github.com/magmalake/bench.mojo), which warms up,
+calibrates its own iteration count, and reports the mean of five timed
+repetitions. The GB/s column is the harness's figure, not arithmetic done in
 the benchmark. Measured on an Apple Silicon Mac (`osx-arm64`, stable Mojo
-1.0.0), five consecutive runs:
+1.0.0), across consecutive runs:
 
 | hash | throughput | spread across runs |
 |---|---|---|
-| CRC-32 (slice-by-8) | 1.48 GB/s | 1.47–1.51 |
-| MurmurHash3 x86-32 | 1.67 GB/s | 1.65–1.69 |
-| XXH64 | 1.29 GB/s | 1.28–1.30 |
+| CRC-32 (slice-by-8) | 1.46 GB/s | 1.45–1.48 |
+| MurmurHash3 x86-32 | 1.65 GB/s | 1.64–1.67 |
+| XXH64 | 1.28 GB/s | 1.26–1.29 |
 
-These are all a little higher than the figures published before
-2026-09-01 (~1.3 / ~1.5 / ~1.2 GB/s), which came from a hand-rolled harness
-that timed a single cold pass over a freshly built buffer. Same code, better
+CRC-32 and MurmurHash3 come out a little above the figures published before
+2026-09-01 (~1.3 / ~1.5 GB/s), which were a single cold pass over a
+freshly built buffer. XXH64 is unchanged at ~1.2–1.3. Same code, better
 measurement.
 
 Numbers are single-core, non-SIMD scalar implementations — correctness and
 portability (identical results on `osx-arm64` and `linux-64`, stable and
 nightly Mojo) took priority over squeezing out the last bit of throughput.
 
-Pass a path to also write CSV, for diffing across commits:
+### XXH64 is 28% faster when it has exactly one call site
+
+Worth knowing before you quote a number at it. If a module calls `xxh64`
+**once**, the compiler specialises it into that caller and a 64 MiB buffer
+takes 40 ms — 1.67 GB/s. Add a second `xxh64` call anywhere in the same module
+and the shared version is used instead: 51 ms, 1.29 GB/s. `crc32` and
+`murmur3_x86_32` show no such effect; that was measured, not assumed.
+
+The table above reports the **shared** figure, because it is what any consumer
+calling `xxh64` from more than one place actually gets, and because the
+alternative is a published number that moves 28% the day someone adds a call.
+`bench/bench_hashes.mojo` keeps a deliberate `_anchor_call_sites` helper to
+pin this down; see the comment there.
+
+Other output modes:
 
 ```sh
-pixi run -e stable bench results.csv
+pixi run -e bench bench -- --json              # machine-readable, with every repetition
+pixi run -e bench bench -- --out results.json  # table plus a saved copy
+pixi run -e bench bench -- --only bench_xxh64
+pixi run -e bench bench -- --list
 ```
 
-The benchmark is stable-only. On nightly, `Bencher.iter` has lost its
-parameter form, and its value form will not take a `@parameter` closure while
-a plain closure cannot infer a capture convention — so nightly `std.benchmark`
-currently cannot express a benchmark that closes over data. The library itself
-still builds and tests clean on both.
+The `bench` environment is on stable Mojo 1.0.0, for a packaging reason rather
+than a language one: every magmalake tin builds its package with
+`mojo-compiler 1.0.0`, and nightly cannot load a `.mojopkg` that stable
+produced. The harness itself is toolchain-agnostic — [bench.mojo's own
+CI](https://github.com/magmalake/bench.mojo) runs it on stable and nightly,
+from source. The library here still tests on both.
 
 ## Install as a mojoshelf tin
 
@@ -147,7 +165,7 @@ flags.
 ```sh
 pixi run -e stable test    # stable Mojo 1.0.0
 pixi run -e default test   # nightly
-pixi run -e stable bench   # throughput numbers above (stable only)
+pixi run -e bench bench    # throughput numbers above
 ```
 
 ## License

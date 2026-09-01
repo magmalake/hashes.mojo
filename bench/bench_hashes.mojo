@@ -1,39 +1,17 @@
-"""Throughput for each hash over a 64 MiB buffer, via `std.benchmark`.
+"""Throughput for each hash over a 64 MiB buffer.
 
-Replaces a hand-rolled harness that timed one call each with `perf_counter_ns`
-and kept the results alive by printing them. Three things improve:
+    pixi run -e bench bench                    # nightly, table
+    pixi run -e bench-stable bench             # stable 1.0.0
+    pixi run -e bench bench -- --json          # machine-readable
+    pixi run -e bench bench -- --out r.json    # table plus a saved copy
+    pixi run -e bench bench -- --only bench_crc32
 
-- `Bench` warms up, chooses its own batch sizes, and reports a mean over many
-  iterations rather than a single cold sample;
-- `compiler.keep` says "this value must survive" outright, instead of relying
-  on a trailing `print` to stop the optimiser deleting the call;
-- `ThroughputMeasure(BenchMetric.bytes, SIZE)` has the harness derive GB/s, so
-  the rate is no longer arithmetic done by hand inside the benchmark.
-
-Pass a path to also write the results as CSV:
-
-    pixi run -e stable bench results.csv
-
-**This runs on stable 1.0.0 only.** On nightly, `Bencher.iter` has lost its
-parameter form and its value form will not accept a `@parameter` closure,
-while a plain closure cannot infer a capture convention at all -- so nightly
-`std.benchmark` cannot express a benchmark that closes over data. See the
-magmalake `.github` issue on adopting `std.benchmark` for the overload lists.
+The buffer is rebuilt on every call rather than shared across benchmarks: the
+harness re-enters each body once per phase, and only what is inside `b.iter`
+is timed, so construction costs wall-clock but never shows up in the numbers.
 """
 
-from std.benchmark import (
-    Bench,
-    BenchConfig,
-    Bencher,
-    BenchId,
-    BenchMetric,
-    Format,
-    ThroughputMeasure,
-)
-from std.benchmark.compiler import keep
-from std.os import abort
-from std.pathlib import Path
-from std.sys import argv
+from bench import Benchmark, BenchSuite, Metric, keep
 
 from hashes import crc32, murmur3_x86_32, xxh64
 
@@ -48,70 +26,64 @@ def _make_buffer(n: Int) -> List[UInt8]:
     return out^
 
 
-# Three shapes below are toolchain constraints rather than anything to do with
-# hashing, and they are worth naming because the next tin will hit them too:
-#
-#   * the buffer arrives as `bench_with_input`'s argument, because a closure
-#     cannot infer a capture convention for a `Span`;
-#   * the inner closure is `@parameter`, because only a `@parameter` closure
-#     may capture at all -- hence `b.iter[call]()` rather than `b.iter(call)`;
-#   * the benchmark itself does not raise, swallowing an impossible error from
-#     the hashes, because the `bench_with_input` overload that takes a plain
-#     function by value is the non-raising one.
-def bench_crc32(mut b: Bencher, buf: List[UInt8]):
+def bench_crc32(mut b: Benchmark) raises:
+    var data = _make_buffer(SIZE)
+    b.throughput(Metric.bytes(), SIZE)
+
     @parameter
-    def call():
-        try:
-            var h = crc32(Span(buf))
-            keep(h)
-        except e:
-            abort(String(e))
+    def call() raises:
+        var h = crc32(Span(data))
+        keep(h)
 
     b.iter[call]()
+    keep(data)
 
 
-def bench_murmur3(mut b: Bencher, buf: List[UInt8]):
+def bench_murmur3_x86_32(mut b: Benchmark) raises:
+    var data = _make_buffer(SIZE)
+    b.throughput(Metric.bytes(), SIZE)
+
     @parameter
-    def call():
-        try:
-            var h = murmur3_x86_32(Span(buf))
-            keep(h)
-        except e:
-            abort(String(e))
+    def call() raises:
+        var h = murmur3_x86_32(Span(data))
+        keep(h)
 
     b.iter[call]()
+    keep(data)
 
 
-def bench_xxh64(mut b: Bencher, buf: List[UInt8]):
+def bench_xxh64(mut b: Benchmark) raises:
+    var data = _make_buffer(SIZE)
+    b.throughput(Metric.bytes(), SIZE)
+
     @parameter
-    def call():
-        try:
-            var h = xxh64(Span(buf))
-            keep(h)
-        except e:
-            abort(String(e))
+    def call() raises:
+        var h = xxh64(Span(data))
+        keep(h)
 
     b.iter[call]()
+    keep(data)
+
+
+def _anchor_call_sites(data: List[UInt8]) raises -> UInt64:
+    """Never benchmarked. Exists so each hash has more than one call site.
+
+    `xxh64` is 28% faster when it is the only `xxh64` call in a module -- 40 ms
+    per 64 MiB against 51 ms -- because the compiler will specialise it into a
+    lone caller and will not when the code is shared. Without this anchor the
+    benchmark measures the specialised form, which no consumer that calls
+    `xxh64` from two places will ever get, and the published figure would move
+    28% the day someone adds a second call. `crc32` and `murmur3_x86_32` are
+    unaffected either way; measured, not assumed.
+    """
+    return (
+        UInt64(crc32(Span(data)))
+        + UInt64(murmur3_x86_32(Span(data)))
+        + xxh64(Span(data))
+    )
 
 
 def main() raises:
-    print("building", SIZE // (1024 * 1024), "MiB buffer...")
-    var data = _make_buffer(SIZE)
-
-    var config = BenchConfig(
-        min_runtime_secs=1.0, max_runtime_secs=5.0, num_warmup_iters=2
-    )
-    var args = argv()
-    if len(args) > 1:
-        config.out_file = Path(String(args[1]))
-        config.out_file_format = Format.csv
-
-    var m = Bench(config^)
-    var bytes = List[ThroughputMeasure]()
-    bytes.append(ThroughputMeasure(BenchMetric.bytes, SIZE))
-
-    m.bench_with_input(bench_crc32, BenchId("crc32"), data, bytes)
-    m.bench_with_input(bench_murmur3, BenchId("murmur3_x86_32"), data, bytes)
-    m.bench_with_input(bench_xxh64, BenchId("xxh64"), data, bytes)
-
-    m.dump_report()
+    var tiny = _make_buffer(16)
+    keep(_anchor_call_sites(tiny))
+    BenchSuite.run[__functions_in_module()]()
