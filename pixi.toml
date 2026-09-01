@@ -48,7 +48,7 @@ mojo-compiler = "==1.0.0"
 # and refused by any other, and magmalake tins build with mojo-compiler 1.0.0.
 # bench.mojo's own CI runs the harness on both toolchains from source.
 [feature.bench.dependencies]
-bench-mojo = { git = "https://github.com/magmalake/bench.mojo", rev = "ec088a0b8ca7d21a1bf32f923528108e77473c4f" }
+bench-mojo = { git = "https://github.com/magmalake/bench.mojo", rev = "971759f58b862cfaa8fdef8708cd42f52ac719f9" }
 
 [feature.bench.tasks]
 bench = "mojo run -I src -I $CONDA_PREFIX/lib/mojo bench/bench_hashes.mojo"

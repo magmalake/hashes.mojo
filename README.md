@@ -133,6 +133,12 @@ alternative is a published number that moves 28% the day someone adds a call.
 `bench/bench_hashes.mojo` keeps a deliberate `_anchor_call_sites` helper to
 pin this down; see the comment there.
 
+Every push to `main` re-runs these and appends to a history published at
+[magmalake.github.io/hashes.mojo/benchmarks](https://magmalake.github.io/hashes.mojo/benchmarks/).
+Those numbers come from a GitHub runner and are slower and noisier than the
+table above, which was taken on an M4 — the history is keyed by machine, so
+the two are separate series and never averaged together.
+
 Other output modes:
 
 ```sh
