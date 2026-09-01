@@ -116,6 +116,8 @@ nightly Mojo) took priority over squeezing out the last bit of throughput.
 pixi shelf add hashes-mojo     # pixi mode (git source dependency)
 ```
 
+Working with a coding agent? `npx skills add mojoshelf/mojoshelf --skill mojoshelf-consume --yes` teaches it to find and install tins itself — it installs the `shelf` CLI too.
+
 Or as a plain source dependency: `-I ../hashes.mojo/src`, no FFI, no link
 flags.
 
