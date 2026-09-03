@@ -7,7 +7,7 @@
       "physical_cores": 2,
       "logical_cores": 4,
       "performance_cores": 2,
-      "memory_bytes": 16766410752,
+      "memory_bytes": 16766414848,
       "accelerator": false
     },
     "linux-x86_64-intel-r-xeon-r-platinum-8573c-2c": {
@@ -32,6 +32,60 @@
     }
   },
   "runs": [
+    {
+      "commit": "399b149545f77d9c1c1b06c6634f3bdf3ca3bb0c",
+      "short_commit": "399b149",
+      "timestamp": "2026-09-03T23:57:52Z",
+      "ref": "main",
+      "host": "linux-x86_64-amd-epyc-9v74-80-core-processor-2c",
+      "config": {
+        "min_runtime_secs": 1.0,
+        "num_warmup_iters": 2,
+        "num_repetitions": 5,
+        "max_iters": 100000000
+      },
+      "results": {
+        "bench_crc32": {
+          "mean_ns": 87894753.81666666,
+          "min_ns": 87737023.25,
+          "max_ns": 88105565.16666667,
+          "median_ns": 87810601.25,
+          "stddev_ns": 177471.7461378979,
+          "iters": 12,
+          "reps": 5,
+          "throughput": 0.7635138741042218,
+          "throughput_unit": "GB/s",
+          "throughput_metric": "bytes",
+          "throughput_count": 67108864
+        },
+        "bench_murmur3_x86_32": {
+          "mean_ns": 95120806.71666667,
+          "min_ns": 94908495.25,
+          "max_ns": 95702401.91666667,
+          "median_ns": 95010735.41666667,
+          "stddev_ns": 329590.7085485704,
+          "iters": 12,
+          "reps": 5,
+          "throughput": 0.7055119307376676,
+          "throughput_unit": "GB/s",
+          "throughput_metric": "bytes",
+          "throughput_count": 67108864
+        },
+        "bench_xxh64": {
+          "mean_ns": 101301243.12727273,
+          "min_ns": 100698981.18181819,
+          "max_ns": 102596696.72727273,
+          "median_ns": 100956703.27272727,
+          "stddev_ns": 790267.9876151625,
+          "iters": 11,
+          "reps": 5,
+          "throughput": 0.6624683165603985,
+          "throughput_unit": "GB/s",
+          "throughput_metric": "bytes",
+          "throughput_count": 67108864
+        }
+      }
+    },
     {
       "commit": "cbc31e6f7aa6004e79d7638df30dedb8f682a221",
       "short_commit": "cbc31e6",
