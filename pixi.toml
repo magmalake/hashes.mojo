@@ -2,7 +2,7 @@
 authors = ["Marius S <39998+winding-lines@users.noreply.github.com>"]
 channels = ["https://conda.modular.com/max-nightly", "conda-forge"]
 name = "hashes.mojo"
-version = "0.1.0"
+version = "0.1.1"
 description = "Pure-Mojo CRC-32, MurmurHash3 x86-32, and XXH64 — the hashes Apache Iceberg and Parquet need."
 preview = ["pixi-build"]
 platforms = ["osx-arm64", "linux-64"]
@@ -23,7 +23,7 @@ lint = { cmd = "mojolint --lsp -I src src tests" }
 # Conda package name is hashes-mojo; the Mojo import stays `from hashes import …`.
 [package]
 name = "hashes-mojo"
-version = "0.1.0"
+version = "0.1.1"
 
 [package.build]
 backend = { name = "pixi-build-mojo", version = "0.*" }
