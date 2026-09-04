@@ -1,4 +1,4 @@
-"""hashes — CRC-32, MurmurHash3 x86-32, and XXH64 in pure Mojo.
+"""Hashes — CRC-32, MurmurHash3 x86-32, and XXH64 in pure Mojo.
 
 The three hashes Apache Iceberg and Parquet need: CRC-32 (deletion-vector
 checksums, Parquet page CRCs, gzip), MurmurHash3 x86-32 seed 0 (Iceberg's
