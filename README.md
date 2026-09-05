@@ -149,8 +149,7 @@ pixi run -e bench bench -- --list
 ```
 
 The `bench` environment is on stable Mojo 1.0.0, for a packaging reason rather
-than a language one. A precompiled Mojo package (`.mojoc`; `.mojopkg` is the
-deprecated spelling) is stamped with the compiler version that produced it and
+than a language one. A precompiled Mojo package `.mojoc` is stamped with the compiler version that produced it and
 refused by any other, and magmalake tins build with `mojo-compiler 1.0.0`.
 The harness itself is toolchain-agnostic — [bench.mojo's own
 CI](https://github.com/magmalake/bench.mojo) runs it on stable and nightly
