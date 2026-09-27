@@ -30,12 +30,11 @@ def bench_crc32(mut b: Benchmark) raises:
     var data = _make_buffer(SIZE)
     b.throughput(Metric.bytes(), SIZE)
 
-    @parameter
-    def call() raises:
+    def call() raises {imm data}:
         var h = crc32(Span(data))
         keep(h)
 
-    b.iter[call]()
+    b.iter(call)
     keep(data)
 
 
@@ -43,12 +42,11 @@ def bench_murmur3_x86_32(mut b: Benchmark) raises:
     var data = _make_buffer(SIZE)
     b.throughput(Metric.bytes(), SIZE)
 
-    @parameter
-    def call() raises:
+    def call() raises {imm data}:
         var h = murmur3_x86_32(Span(data))
         keep(h)
 
-    b.iter[call]()
+    b.iter(call)
     keep(data)
 
 
@@ -56,12 +54,11 @@ def bench_xxh64(mut b: Benchmark) raises:
     var data = _make_buffer(SIZE)
     b.throughput(Metric.bytes(), SIZE)
 
-    @parameter
-    def call() raises:
+    def call() raises {imm data}:
         var h = xxh64(Span(data))
         keep(h)
 
-    b.iter[call]()
+    b.iter(call)
     keep(data)
 
 
