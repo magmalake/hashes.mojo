@@ -1,7 +1,7 @@
 """Throughput for each hash over a 64 MiB buffer.
 
     pixi run -e bench bench                    # nightly, table
-    pixi run -e bench-stable bench             # stable 1.0.0
+    pixi run -e bench-stable bench             # stable 1.1.0
     pixi run -e bench bench -- --json          # machine-readable
     pixi run -e bench bench -- --out r.json    # table plus a saved copy
     pixi run -e bench bench -- --only bench_crc32
