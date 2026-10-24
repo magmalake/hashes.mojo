@@ -46,27 +46,30 @@ def murmur3_x86_32(data: Span[UInt8, _], seed: UInt32 = 0) -> UInt32:
     var tail_start = nblocks * 4
     var rem = n - tail_start
     var k1: UInt32 = 0
-    if rem == 3:
-        k1 ^= UInt32(data[tail_start + 2]) << 16
-        k1 ^= UInt32(data[tail_start + 1]) << 8
-        k1 ^= UInt32(data[tail_start])
-        k1 *= _C1
-        k1 = _rotl32(k1, 15)
-        k1 *= _C2
-        h1 ^= k1
-    elif rem == 2:
-        k1 ^= UInt32(data[tail_start + 1]) << 8
-        k1 ^= UInt32(data[tail_start])
-        k1 *= _C1
-        k1 = _rotl32(k1, 15)
-        k1 *= _C2
-        h1 ^= k1
-    elif rem == 1:
-        k1 ^= UInt32(data[tail_start])
-        k1 *= _C1
-        k1 = _rotl32(k1, 15)
-        k1 *= _C2
-        h1 ^= k1
+    match rem:
+        case 3:
+            k1 ^= UInt32(data[tail_start + 2]) << 16
+            k1 ^= UInt32(data[tail_start + 1]) << 8
+            k1 ^= UInt32(data[tail_start])
+            k1 *= _C1
+            k1 = _rotl32(k1, 15)
+            k1 *= _C2
+            h1 ^= k1
+        case 2:
+            k1 ^= UInt32(data[tail_start + 1]) << 8
+            k1 ^= UInt32(data[tail_start])
+            k1 *= _C1
+            k1 = _rotl32(k1, 15)
+            k1 *= _C2
+            h1 ^= k1
+        case 1:
+            k1 ^= UInt32(data[tail_start])
+            k1 *= _C1
+            k1 = _rotl32(k1, 15)
+            k1 *= _C2
+            h1 ^= k1
+        case _:
+            pass
 
     h1 ^= UInt32(n)
     h1 = _fmix32(h1)
