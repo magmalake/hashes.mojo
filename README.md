@@ -64,8 +64,8 @@ def main():
 
 ## Test vectors
 
-All baked into `tests/test_hashes.mojo` as constants, and checked on stable and
-nightly.
+All baked into `tests/test_hashes.mojo` as constants, and checked on every CI
+run.
 
 | input | CRC-32 | MurmurHash3 x86-32 (seed 0) | XXH64 (seed 0) |
 |---|---|---|---|
@@ -148,12 +148,11 @@ pixi run -e bench bench -- --only bench_xxh64
 pixi run -e bench bench -- --list
 ```
 
-The `bench` environment is on stable Mojo 1.2.0, for a packaging reason rather
-than a language one. A precompiled Mojo package `.mojoc` is stamped with the compiler version that produced it and
-refused by any other, and magmalake tins build with `mojo-compiler 1.2.0`.
-The harness itself is toolchain-agnostic — [bench.mojo's own
-CI](https://github.com/magmalake/bench.mojo) runs it on stable and nightly
-from source. The library here still tests on both.
+The `bench` environment consumes [bench.mojo](https://github.com/magmalake/bench.mojo)
+as a built package. A precompiled Mojo package `.mojoc` is stamped with the
+compiler version that produced it and refused by any other, so bench-mojo is
+pinned at a revision built with the same Mojo nightly as this repo,
+`mojo-compiler ==1.3.0.dev2026111805`.
 
 ## Install as a mojoshelf tin
 
@@ -169,8 +168,8 @@ flags.
 ## Test
 
 ```sh
-pixi run -e stable test    # stable Mojo 1.2.0
-pixi run -e default test   # nightly
+pixi run test              # Mojo 1.3.0.dev2026111805
+pixi run lint              # mojolint --lsp
 pixi run -e bench bench    # throughput numbers above
 ```
 

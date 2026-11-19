@@ -20,7 +20,7 @@ from hashes import (
 )
 
 
-def _bytes_of(s: StringSlice) -> List[UInt8]:
+def _bytes_of(s: StringSpan) -> List[UInt8]:
     var out = List[UInt8]()
     for b in s.as_bytes():
         out.append(b)
