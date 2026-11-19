@@ -116,7 +116,7 @@ def iceberg_hash_int(v: Int32) -> Int32:
     return iceberg_hash_long(Int64(v))
 
 
-def iceberg_hash_string(s: StringSlice) -> Int32:
+def iceberg_hash_string(s: StringSpan) -> Int32:
     return _to_int32(murmur3_x86_32(s.as_bytes(), 0))
 
 
