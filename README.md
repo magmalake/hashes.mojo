@@ -1,6 +1,6 @@
 # hashes.mojo
 
-[![mojoshelf](https://mojoshelf.org/badge/hashes-mojo.svg)](https://mojoshelf.org/tins/hashes-mojo) [![mojo nightly](https://mojoshelf.org/badge/hashes-mojo/nightly.svg)](https://mojoshelf.org/tins/hashes-mojo)
+[![mojoshelf](https://mojoshelf.org/badge/hashes-mojo.svg)](https://mojoshelf.org/tins/hashes-mojo) [![mojo nightly](https://mojoshelf.org/badge/hashes-mojo/nightly.svg)](https://mojoshelf.org/tins/hashes-mojo) [![Used by](https://mojourney.dev/badge/magmalake/hashes.mojo/used-by.svg)](https://mojourney.dev/repos/magmalake/hashes.mojo#used-by) [![Mojo version](https://mojourney.dev/badge/magmalake/hashes.mojo/mojo.svg)](https://mojourney.dev/repos/magmalake/hashes.mojo)
 
 [![CI](https://github.com/magmalake/hashes.mojo/actions/workflows/ci.yml/badge.svg)](https://github.com/magmalake/hashes.mojo/actions/workflows/ci.yml)
 
