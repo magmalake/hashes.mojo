@@ -152,7 +152,7 @@ The `bench` environment consumes [bench.mojo](https://github.com/magmalake/bench
 as a built package. A precompiled Mojo package `.mojoc` is stamped with the
 compiler version that produced it and refused by any other, so bench-mojo is
 pinned at a revision built with the same Mojo nightly as this repo,
-`mojo-compiler ==1.3.0.dev2026112505`.
+`mojo-compiler ==1.3.0.dev2026112605`.
 
 ## Install as a mojoshelf tin
 
@@ -168,7 +168,7 @@ flags.
 ## Test
 
 ```sh
-pixi run test              # Mojo 1.3.0.dev2026112505
+pixi run test              # Mojo 1.3.0.dev2026112605
 pixi run lint              # mojolint --lsp
 pixi run -e bench bench    # throughput numbers above
 ```
